@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -31,8 +32,11 @@ public class UserCreateServlet extends HttpServlet {
 
         String insertNewUser = "INSERT INTO users (login, password, firstname, lastname, email) VALUES (" + values + ")";
 
-        try (Statement statement = MYSQL_HELPER.getStatement()){
-            statement.executeUpdate(insertNewUser);
+        try (Connection connection = MYSQL_HELPER.getConnection();
+             Statement statement = connection.createStatement()){
+
+             statement.executeUpdate(insertNewUser);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

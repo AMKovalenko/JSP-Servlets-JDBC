@@ -27,5 +27,6 @@
     <orderEntry type="library" name="jstl:jstl:1.2" level="project" />
     <orderEntry type="library" name="javax.servlet.jsp.jstl:jstl-api:1.2" level="project" />
     <orderEntry type="library" name="mysql:mysql-connector-java:5.1.44" level="project" />
+    <orderEntry type="library" name="com.zaxxer:HikariCP:2.4.3" level="project" />
   </component>
 </module>

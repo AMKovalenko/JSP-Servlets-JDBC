@@ -9,8 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 /**
@@ -26,7 +28,9 @@ public class UserAuthorizationServlet extends HttpServlet {
         String enteredPassword =  request.getParameter("password");
         boolean isRegistered = false;
 
-        try(ResultSet resultSet = MYSQL_HELPER.getStatement().executeQuery("SELECT login, password FROM usersdb.users WHERE login='" + enteredLogin + "'")) {
+        try(Connection connection = MYSQL_HELPER.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT login, password FROM usersdb.users WHERE login='" + enteredLogin + "'")) {
             while (resultSet.next()) {
                 if (resultSet.getString("login").equalsIgnoreCase(enteredLogin) && resultSet.getString("password").equalsIgnoreCase(enteredPassword)) {
                     isRegistered = true;

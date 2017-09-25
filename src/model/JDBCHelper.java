@@ -1,31 +1,35 @@
 package model;
 
 
-import com.mysql.fabric.jdbc.FabricMySQLDriver;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.*;
+import java.util.Properties;
 
 /**
  * Created by Александр on 23.09.2017.
  */
-public class JDBCHelper {
+public class JDBCHelper{
     private static final String URL = "jdbc:mysql://localhost:3306/usersdb?autoReconnect=true&useSSL=false";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root";
-    private Statement statement = null;
     private Connection connection = null;
+
+    private final HikariDataSource connectionPool;
 
     private static JDBCHelper INSTANCE_JDBC;
 
     private JDBCHelper() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Driver driver = new FabricMySQLDriver();
-            DriverManager.registerDriver(driver);
-            this.connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+            Properties props = new Properties();
+            props.setProperty("dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+            props.setProperty("dataSource.url", URL);
+            props.setProperty("dataSource.user", USERNAME);
+            props.setProperty("dataSource.password", PASSWORD);
+            props.setProperty("poolName", "ConnectionPool");
+            props.setProperty("maximumPoolSize", "10"); // в этом пуле будет максимум 5 соединений
+            props.setProperty("minimumIdle", "1"); // как минимум одно активное соединение там будет жить постоянно
+            connectionPool = new HikariDataSource(new HikariConfig(props));
     }
 
     public static synchronized JDBCHelper getInstanceJdbc(){
@@ -35,13 +39,14 @@ public class JDBCHelper {
         return INSTANCE_JDBC;
     }
 
-    public Statement getStatement() {
+    public Connection getConnection() {
         try {
-            statement = connection.createStatement();
+            connection = connectionPool.getConnection();
         }
         catch (SQLException e){
             e.printStackTrace();
         }
-        return statement;
+        return connection;
     }
+
 }
